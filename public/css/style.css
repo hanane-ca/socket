@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+}
+
+.chat {
+    flex: 2;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    flex: auto;
+}
+
+.message-input {
+    padding: 1rem;
+}
+
+.message-input button {
+    background-color: #8752aa;
+    color: white;
+}
+
+.messages-header {
+    padding: 0.8rem 0.3rem;
+    text-align: center;
+    background-color: #8752aa;
+    color: white;
+    font-family:  serif;
+}
+
+.messages-body {
+    padding: 1rem;
+    max-height: 81vh;
+}
+
+.msg {
+    font-family: monospace;
+    font-size: 1.3rem;
+}
+
+.me {
+    background: #d2d2ff;
+    width: fit-content;
+    padding: 0.55rem;
+    padding-left: 1rem;
+    border-radius: 0rem 1rem 1rem 1rem;
+}
+
+.others {
+    background: #ffd2ff;
+    width: fit-content;
+    padding: 0.55rem;
+    padding-right: 1rem;
+    border-radius: 1rem 0rem 1rem 1rem;
+    float: right;
+}
+
+
+/** video section */
+
+.video {
+    flex: 5;
+    background-color: rgb(33, 28, 65);
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.show {
+    flex: auto;
+    min-width: 100%;
+    padding: 2rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    justify-content: center;
+}
+.show .card {
+    margin: 0.5rem;
+    padding: 0;
+}
+.camera {
+    height:auto;
+}
+.actions {
+    padding: 1rem;
+}
