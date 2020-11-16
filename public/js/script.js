@@ -1,21 +1,41 @@
-const socket = io('http://localhost:3000')
-var messageContainer = document.getElementById('message-container')
-const messageForm = document.getElementById('send-container')
-const messageInput = document.getElementById('message-input')
+const socket = io('/');
+const myPeer = new Peer(undefined, {
+  host: '/',
+  port: '3001'
+});
+
+
+var messageContainer = document.getElementById('message-container');
+const messageForm = document.getElementById('send-container');
+const messageInput = document.getElementById('message-input');
+
+// var person = prompt("Please enter your name", "Username");
+var person = 'username';
+var users = [];
 
 socket.on('chat-message', data => {
   appendMessage(`${data.message}`, false)
-})
+});
+
+myPeer.on('open', id => {
+  socket.emit('join-room', roomId, id);
+});
+
+
+socket.on('user-disconnected', userId => {
+  console.log(userId);
+  if(users[userId]) users[userId].close();
+});
 
 messageForm.addEventListener('submit', e => {
-  e.preventDefault()
-  const message = messageInput.value
+  e.preventDefault();
+  const message = messageInput.value;
   if (message != '') {
-    appendMessage(`${message}`, true)
-    socket.emit('send-chat-message', message)
-    messageInput.value = ''
+    appendMessage(`${message}`, true);
+    socket.emit('send-chat-message', message);
+    messageInput.value = '';
   }
-})
+});
 
 function appendMessage(message, me) {
   const messageElement = document.createElement('div')
@@ -37,41 +57,66 @@ var constraints = {
   audio: false,
   video: true
 };
-var usersList = document.querySelector("#users_list");
+var usersListGrid = document.querySelector("#users_list");
+var myVideo = document.createElement('video');
 
+// function createVideoElement(video, person) {
+//   var divCard = document.createElement('div');
+//   divCard.className = 'card col-lg-3';
+//   divCard.style.height = '14.5rem';
+//   var videoContainer = document.createElement('div');
+//   videoContainer.className = 'camera';
+//   videoContainer.append(video);
+//   var divText = document.createElement('div');
+//   divText.classList = 'text-center text-muted p-3';
+//   divText.append(person);
+//   divCard.append(videoContainer);
+//   divCard.append(divText);
+//   usersListGrid.append(divCard);
+// }
 
-function successCallback(stream) {
-  usersList.innerHTML += `
-  <div class="card col-lg-3" style="height: 14.5rem;">
-      <div class="camera">
-          <video style="width:100%; height: 100%;" autoplay></video>
-      </div>
-      <div class="text-center text-muted p-3">
-          Username
-      </div>
-  </div>
-  `;
-  var video = document.querySelector('video');
+function createVideoElement(video,person) {
+  usersListGrid.append(video);
+}
+
+function addVideoStream(video, stream) {
   video.srcObject = stream;
-  video.play();
+  video.addEventListener('loadedmetadata', () => {
+    video.play();
+  });
+  createVideoElement(video, person);
 }
 
 function errorCallback(error) {
   console.log("navigator.getUserMedia error: ", error);
 }
-navigator.getUserMedia(constraints, successCallback, errorCallback);
 
+navigator.mediaDevices.getUserMedia(constraints)
+  .then(stream => {
+    addVideoStream(myVideo, stream);
 
-// disable video
-var disableBtn = document.querySelector('#disable');
-var on = true;
-disableBtn.addEventListener('click', (e) => {
-  var video = document.querySelector('video');
-  if(on) {
-    video.pause();
-    on = false;
-  } else {
-    video.play();
-    on = true;
-  }
-});
+    myPeer.on('call', call => {
+      var video = document.createElement('video');
+      call.answer(stream);
+      call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream);
+      })
+    });
+    
+    socket.on('user-connected', userId => {
+      connectToNewUser(userId, stream);
+    });
+  }); 
+
+function connectToNewUser(userId,stream) {
+  const call = myPeer.call(userId,stream);
+  var video = document.createElement('video');
+  call.on('stream',userVideoStream => {
+    addVideoStream(video,userVideoStream);
+  });
+  call.on('close', () => {
+    video.remove();
+  });
+  users[userId] = call;
+}
+
