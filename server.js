@@ -7,25 +7,27 @@ const { v4 : uuidV4 } = require('uuid');
 app.set('view engine','ejs');
 app.use(express.static('public'));
 
+//index
 app.get('/',(req,res) => {
-  res.render('room', {roomId : 1});
+  res.render('index',{newRoom : uuidV4()});
 });
 
+//room
 app.get('/:room',(req,res) => {
   res.render('room', {roomId : req.params.room});
 });
 
 
 io.on('connection', socket => {
-  socket.on('send-chat-message', message => {
-    socke.broadcast.emit('chat-message', { message: message});
-  });
   socket.on('join-room', (roomId,userId) => {
-    socket.broadcast.emit('user-connected',userId);
+    socket.join(roomId);
+    socket.to(roomId).broadcast.emit('user-connected',userId);
     socket.on('disconnect',() => {
-      socket.broadcast.emit('user-disconnected',userId);
+      socket.to(roomId).broadcast.emit('user-disconnected',userId);
     });
-    
+    socket.on('send-chat-message', message => {
+      socket.to(roomId).broadcast.emit('chat-message', { message: message});
+    });
   });
 });
 

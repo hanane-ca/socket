@@ -51,8 +51,7 @@ body {
 .me {
     background: #d2d2ff;
     width: fit-content;
-    padding: 0.55rem;
-    padding-left: 1rem;
+    padding: 0.55rem 1rem;
     border-radius: 0rem 1rem 1rem 1rem;
     margin-bottom: 0.3rem;
 }
@@ -60,7 +59,7 @@ body {
 .others {
     background: #ffd2ff;
     width: fit-content;
-    padding: 0.55rem;
+    padding: 0.55rem 1rem;
     padding-right: 1rem;
     border-radius: 1rem 0rem 1rem 1rem;
     margin-left: auto;

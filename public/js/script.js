@@ -120,3 +120,11 @@ function connectToNewUser(userId,stream) {
   users[userId] = call;
 }
 
+
+//copy link 
+const copyBtn = document.getElementById('copy');
+copyBtn.addEventListener('click', () => {
+  var link = window.location.href;
+  navigator.clipboard.writeText(link);
+  alert('copied !! ');
+});
