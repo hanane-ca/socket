@@ -126,5 +126,10 @@ const copyBtn = document.getElementById('copy');
 copyBtn.addEventListener('click', () => {
   var link = window.location.href;
   navigator.clipboard.writeText(link);
-  alert('copied !! ');
+  Swal.fire({
+    title: 'Copied!',
+    text : 'You Can Share Your Room Now',
+    icon: 'success',
+    confirmButtonText: 'Thank you !'
+  });
 });
